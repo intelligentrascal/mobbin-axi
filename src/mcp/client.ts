@@ -1,0 +1,40 @@
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { MCP_URL } from '../config.js';
+import { MobbinOAuthProvider } from '../auth/provider.js';
+import { loadCredentials } from '../auth/store.js';
+import { AxiError, mapMcpError } from '../errors.js';
+
+let cached: Client | undefined;
+
+async function connect(): Promise<Client> {
+  if (cached) return cached;
+  if (!loadCredentials()?.tokens?.access_token) {
+    throw new AxiError('Not authenticated with Mobbin', 'AUTH_REQUIRED', ['Run `mobbin-axi login`']);
+  }
+  const provider = new MobbinOAuthProvider(() => {
+    throw new AxiError('Mobbin session expired', 'AUTH_REQUIRED', ['Run `mobbin-axi login`']);
+  });
+  const client = new Client({ name: 'mobbin-axi', version: '0.1.0' });
+  await client.connect(new StreamableHTTPClientTransport(new URL(MCP_URL), { authProvider: provider }));
+  cached = client;
+  return client;
+}
+
+export async function callTool(name: string, args: Record<string, unknown>): Promise<unknown> {
+  try {
+    const client = await connect();
+    const result = await client.callTool({ name, arguments: args });
+    return (result as { structuredContent?: unknown }).structuredContent ?? parseTextContent(result);
+  } catch (error) {
+    if (error instanceof AxiError) throw error;
+    throw mapMcpError(error);
+  }
+}
+
+function parseTextContent(result: unknown): unknown {
+  const content = (result as { content?: Array<{ type: string; text?: string }> }).content ?? [];
+  const text = content.find((c) => c.type === 'text')?.text;
+  if (!text) return result;
+  try { return JSON.parse(text); } catch { return { text }; }
+}
