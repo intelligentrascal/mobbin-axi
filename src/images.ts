@@ -28,9 +28,21 @@ export async function downloadImages(
       createHash('sha1').update(url).digest('hex') + ext,
     );
     if (!existsSync(file)) {
-      const res = await fetchImpl(url);
-      if (!res.ok) continue;
-      writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+      try {
+        const res = await fetchImpl(url);
+        if (!res.ok) {
+          process.stderr.write(
+            `mobbin-axi: image fetch failed (${(res as any).status ?? '?'}) ${url}\n`,
+          );
+          continue;
+        }
+        writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+      } catch (e) {
+        process.stderr.write(
+          `mobbin-axi: image fetch error ${url}: ${(e as Error).message}\n`,
+        );
+        continue;
+      }
     }
     out.push(file);
   }
