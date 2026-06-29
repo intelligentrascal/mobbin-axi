@@ -32,9 +32,10 @@ export async function callTool(name: string, args: Record<string, unknown>): Pro
   }
 }
 
-function parseTextContent(result: unknown): unknown {
-  const content = (result as { content?: Array<{ type: string; text?: string }> }).content ?? [];
-  const text = content.find((c) => c.type === 'text')?.text;
+export function parseTextContent(result: unknown): unknown {
+  const content = (result as { content?: unknown }).content;
+  const items = Array.isArray(content) ? (content as Array<{ type: string; text?: string }>) : [];
+  const text = items.find((c) => c.type === 'text')?.text;
   if (!text) return result;
   try { return JSON.parse(text); } catch { return { text }; }
 }
