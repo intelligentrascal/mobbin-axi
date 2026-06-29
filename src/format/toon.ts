@@ -1,6 +1,6 @@
 import { encode } from '@toon-format/toon';
 
-type FieldDef =
+export type FieldDef =
   | { type: 'field'; key: string; as?: string }
   | { type: 'pluck'; key: string; subkey: string; as?: string }
   | { type: 'custom'; as: string; fn: (item: Record<string, unknown>) => unknown };
