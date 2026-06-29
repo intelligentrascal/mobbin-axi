@@ -1,4 +1,4 @@
-import { createServer } from 'node:http';
+import { createServer, type Server } from 'node:http';
 import open from 'open';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
@@ -18,6 +18,7 @@ export function parseCallback(
 
 function waitForCallback(
   provider: MobbinOAuthProvider,
+  serverRef: { current: Server | null },
 ): Promise<URLSearchParams> {
   return new Promise((resolve, reject) => {
     const server = createServer((req, res) => {
@@ -41,15 +42,27 @@ function waitForCallback(
         reject(e);
       }
     });
+    serverRef.current = server;
     server.listen(REDIRECT_PORT);
     server.on('error', reject);
   });
 }
 
 export async function runLogin(): Promise<void> {
-  const provider = new MobbinOAuthProvider(
-    (url) => void open(url.toString()),
-  );
+  const provider = new MobbinOAuthProvider((url) => {
+    void (async () => {
+      try {
+        await open(url.toString());
+        process.stderr.write(
+          `Opening your browser to authorize mobbin-axi…\n`,
+        );
+      } catch {
+        process.stderr.write(
+          `Open this URL in your browser to authorize mobbin-axi:\n${url}\n`,
+        );
+      }
+    })();
+  });
   const client = new Client({ name: 'mobbin-axi', version: '0.1.0' });
   try {
     await client.connect(
@@ -60,13 +73,22 @@ export async function runLogin(): Promise<void> {
     process.stdout.write('Already authenticated.\n');
     return;
   } catch (error) {
-    const root =
-      error instanceof UnauthorizedError
-        ? error
-        : (error as { data?: { cause?: unknown } }).data?.cause;
-    if (!(root instanceof UnauthorizedError)) throw error;
+    if (!(error instanceof UnauthorizedError)) throw error;
   }
-  const params = await waitForCallback(provider);
+  const serverRef: { current: Server | null } = { current: null };
+  const params = await Promise.race([
+    waitForCallback(provider, serverRef),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => {
+        serverRef.current?.close();
+        reject(
+          new Error(
+            'Login timed out after 2 minutes — run `mobbin-axi login` again',
+          ),
+        );
+      }, 120_000).unref(),
+    ),
+  ]);
   // v1.29.0 adaptation: finishAuth takes authorizationCode string, not URLSearchParams
   const authTransport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
     authProvider: provider,
