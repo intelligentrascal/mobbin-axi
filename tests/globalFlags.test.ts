@@ -33,6 +33,22 @@ describe('parseGlobalFlags', () => {
     expect(flags).toEqual({ full: false, json: false, download: false, popular: false });
     expect(rest).toEqual(['Login', 'Dashboard']);
   });
+  it('rejects --limit at end-of-args (no value provided)', () => {
+    const { flags } = parseGlobalFlags(['--limit']);
+    expect(flags.limit).toBeUndefined();
+  });
+  it('rejects --limit with non-numeric value', () => {
+    const { flags } = parseGlobalFlags(['--limit', 'abc']);
+    expect(flags.limit).toBeUndefined();
+  });
+  it('rejects --limit=NaN via equals form', () => {
+    const { flags } = parseGlobalFlags(['--limit=abc']);
+    expect(flags.limit).toBeUndefined();
+  });
+  it('rejects --limit when next arg is another flag', () => {
+    const { flags } = parseGlobalFlags(['--limit', '--json']);
+    expect(flags.limit).toBeUndefined();
+  });
   it('treats unknown flags as positional args', () => {
     const { flags, rest } = parseGlobalFlags(['--unknown', '--verbose']);
     expect(flags.full).toBe(false);

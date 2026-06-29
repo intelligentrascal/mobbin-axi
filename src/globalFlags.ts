@@ -20,11 +20,18 @@ export function parseGlobalFlags(args: string[]): { flags: GlobalFlags; rest: st
     else if (a === '--popular') flags.popular = true;
     else if (a === '--platform') flags.platform = args[++i] as GlobalFlags['platform'];
     else if (eq('--platform')) flags.platform = eq('--platform') as GlobalFlags['platform'];
-    else if (a === '--limit') flags.limit = Number(args[++i]);
+    else if (a === '--limit') {
+      const val = args[++i];
+      if (val !== undefined && !val.startsWith('--')) flags.limit = Number(val);
+      else { i--; /* put back */ }
+    }
     else if (eq('--limit')) flags.limit = Number(eq('--limit'));
     else if (a === '--type') flags.type = args[++i];
     else if (eq('--type')) flags.type = eq('--type');
     else rest.push(a);
+  }
+  if (flags.limit !== undefined && !Number.isFinite(flags.limit)) {
+    flags.limit = undefined;
   }
   return { flags, rest };
 }
