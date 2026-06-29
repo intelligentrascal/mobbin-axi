@@ -84,6 +84,43 @@ describe('MobbinOAuthProvider', () => {
     expect(p.clientMetadata.grant_types).toContain('authorization_code');
   });
 
+  it('enforces DCR keying — client saved for issuer A is not returned for issuer B', async () => {
+    const { MobbinOAuthProvider } = await import(
+      '../../src/auth/provider.js?u=' + Date.now()
+    );
+    // Instance 1: register client with issuer A
+    const p1 = new MobbinOAuthProvider(() => {});
+    p1.saveDiscoveryState({
+      authorizationServerUrl: 'https://auth.mobbin.com',
+    });
+    p1.saveClientInformation({
+      client_id: 'mobbin-client-id',
+      client_secret: 'secret',
+    } as any);
+
+    // Instance 2: different issuer — should NOT return issuer A's client
+    const p2 = new MobbinOAuthProvider(() => {});
+    p2.saveDiscoveryState({
+      authorizationServerUrl: 'https://other.example.com',
+    });
+    expect(p2.clientInformation()).toBeUndefined();
+  });
+
+  it('invalidateCredentials("tokens") clears persisted tokens', async () => {
+    const { MobbinOAuthProvider } = await import(
+      '../../src/auth/provider.js?u=' + Date.now()
+    );
+    const p = new MobbinOAuthProvider(() => {});
+    p.saveTokens({
+      access_token: 'tok',
+      token_type: 'Bearer',
+    } as any);
+    expect(p.tokens()?.access_token).toBe('tok');
+
+    await p.invalidateCredentials('tokens');
+    expect(p.tokens()).toBeUndefined();
+  });
+
   it('calls onRedirect when redirectToAuthorization is invoked', async () => {
     const { MobbinOAuthProvider } = await import(
       '../../src/auth/provider.js?u=' + Date.now()

@@ -29,10 +29,10 @@ export class MobbinOAuthProvider implements OAuthClientProvider {
   clientInformation(): OAuthClientInformationMixed | undefined {
     const byIssuer = loadCredentials()?.clientByIssuer;
     if (!byIssuer) return undefined;
+    const issuer = this.discovery?.authorizationServerUrl;
+    if (issuer) return byIssuer[issuer] as OAuthClientInformationMixed | undefined;
     const entries = Object.values(byIssuer);
-    return (entries.length > 0
-      ? (entries[0] as OAuthClientInformationMixed)
-      : undefined);
+    return entries[0] as OAuthClientInformationMixed | undefined;
   }
 
   saveClientInformation(info: OAuthClientInformationMixed): void {
@@ -79,5 +79,31 @@ export class MobbinOAuthProvider implements OAuthClientProvider {
   codeVerifier(): string {
     if (!this.verifier) throw new Error('no code verifier');
     return this.verifier;
+  }
+
+  async invalidateCredentials(
+    scope: 'all' | 'client' | 'tokens' | 'verifier' | 'discovery',
+  ): Promise<void> {
+    if (scope === 'all' || scope === 'tokens') {
+      const creds = loadCredentials() ?? {};
+      delete creds.tokens;
+      saveCredentials(creds);
+    }
+    if (scope === 'all' || scope === 'client') {
+      const issuer = this.discovery?.authorizationServerUrl;
+      if (issuer) {
+        const creds = loadCredentials() ?? {};
+        if (creds.clientByIssuer) {
+          delete creds.clientByIssuer[issuer];
+          saveCredentials(creds);
+        }
+      }
+    }
+    if (scope === 'all' || scope === 'verifier') {
+      this.verifier = undefined;
+    }
+    if (scope === 'all' || scope === 'discovery') {
+      this.discovery = undefined;
+    }
   }
 }
