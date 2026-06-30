@@ -1,13 +1,5 @@
 import type { GlobalFlags } from '../globalFlags.js';
-export interface ToolResult {
-    blocks: string[];
-    suggestion: {
-        domain: string;
-        action: string;
-        isEmpty: boolean;
-        id?: string;
-    };
-}
+import type { ToolResult } from './types.js';
 export declare function mapFlows(result: {
     flows?: unknown[];
 }, _flags: GlobalFlags): ToolResult;

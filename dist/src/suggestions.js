@@ -2,37 +2,45 @@ const table = [
     {
         match: (_c) => _c.domain === 'home',
         lines: () => [
-            'Run `mobbin-axi search "<query>"` or `mobbin-axi screens "Login"`',
+            'Run `mobbin-axi screens "<query>" --platform ios`, `flows "<query>"`, or `sections "<query>"`',
         ],
     },
     {
         match: (c) => c.domain === 'screens' && !c.isEmpty,
         lines: () => [
-            'Run `mobbin-axi screen <id>` for full detail',
-            'Add `--download` to fetch the screenshots as local files',
+            "Open a result's mobbin_url, or add `--download` to fetch the screenshots",
+            'Try `--platform web` for website UIs',
         ],
     },
     {
         match: (c) => c.domain === 'screens' && c.isEmpty,
         lines: () => [
-            'Try a broader term or run `mobbin-axi filters` to see valid patterns',
-        ],
-    },
-    {
-        match: (c) => c.domain === 'apps' && !c.isEmpty,
-        lines: () => [
-            "Run `mobbin-axi app <appId> screens` to see an app's screens",
+            'Try a more specific, single-screen description (e.g. "checkout with Apple Pay")',
         ],
     },
     {
         match: (c) => c.domain === 'flows' && !c.isEmpty,
         lines: () => [
-            "Run `mobbin-axi screen <id>` to inspect a flow's screens",
+            'Add `--download` to fetch the flow\'s screen images',
         ],
     },
     {
-        match: (c) => c.domain === 'screen',
-        lines: () => ['Add `--download` to fetch this screenshot locally'],
+        match: (c) => c.domain === 'flows' && c.isEmpty,
+        lines: () => [
+            'Try describing one user journey, e.g. "onboarding with personalization"',
+        ],
+    },
+    {
+        match: (c) => c.domain === 'sections' && !c.isEmpty,
+        lines: () => [
+            'Add `--download` to fetch the section images',
+        ],
+    },
+    {
+        match: (c) => c.domain === 'sections' && c.isEmpty,
+        lines: () => [
+            'Try a single website section, e.g. "pricing page with plan comparison"',
+        ],
     },
 ];
 export function getSuggestions(ctx) {

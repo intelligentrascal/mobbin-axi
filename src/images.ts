@@ -22,7 +22,7 @@ export async function downloadImages(
   for (const url of urls) {
     if (seen.has(url)) continue;
     seen.add(url);
-    const ext = extname(new URL(url).pathname) || '.png';
+    const ext = extname(new URL(url).pathname) || '.webp';
     const file = join(
       dir,
       createHash('sha1').update(url).digest('hex') + ext,

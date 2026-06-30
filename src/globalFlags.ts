@@ -1,5 +1,5 @@
 export interface GlobalFlags {
-  platform?: 'ios' | 'android' | 'web';
+  platform?: 'ios' | 'web';
   limit?: number;
   full: boolean;
   json: boolean;

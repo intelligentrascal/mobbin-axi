@@ -1,6 +1,4 @@
-import { callTool } from './mcp/client.js';
-import { TOOLS } from './config.js';
-import { field, renderList, renderHelp, renderOutput } from './format/toon.js';
+import { renderHelp, renderOutput } from './format/toon.js';
 import { authStatus } from './auth/login.js';
 import { getSuggestions } from './suggestions.js';
 
@@ -12,16 +10,7 @@ export async function homeCommand(): Promise<string> {
       renderHelp(['Run `mobbin-axi login` to authenticate with Mobbin']),
     ]);
   }
-  let popular = '';
-  try {
-    const res = (await callTool(TOOLS.popularApps, {})) as { apps?: unknown[] };
-    popular = renderList('popular_apps', (res.apps ?? []).slice(0, 5) as Record<string, unknown>[], [
-      field('id'),
-      field('appName', 'name'),
-      field('appTagline', 'tagline'),
-    ]);
-  } catch {
-    popular = '';
-  }
-  return renderOutput([popular, renderHelp(getSuggestions({ domain: 'home', action: 'home', isEmpty: false }))]);
+  return renderOutput([
+    renderHelp(getSuggestions({ domain: 'home', action: 'home', isEmpty: false })),
+  ]);
 }

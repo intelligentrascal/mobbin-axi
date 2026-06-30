@@ -4,15 +4,9 @@ import { join } from 'node:path';
 export const MCP_URL = 'https://api.mobbin.com/mcp';
 
 export const TOOLS = {
-  quickSearch: 'mobbin_quick_search',
-  searchApps: 'mobbin_search_apps',
-  searchScreens: 'mobbin_search_screens',
-  searchFlows: 'mobbin_search_flows',
-  getAppScreens: 'mobbin_get_app_screens',
-  getAppFlows: 'mobbin_get_app_flows',
-  getScreenDetail: 'mobbin_get_screen_detail',
-  getFilters: 'mobbin_get_filters',
-  popularApps: 'mobbin_popular_apps',
+  searchScreens: 'search_screens',
+  searchFlows: 'search_flows',
+  searchSections: 'search_sections',
 } as const;
 
 export const CONFIG_DIR = join(homedir(), '.config', 'mobbin-axi');

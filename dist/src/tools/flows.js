@@ -5,22 +5,22 @@ import { getSuggestions } from '../suggestions.js';
 export function mapFlows(result, _flags) {
     const items = (result.flows ?? []);
     const count = items.length;
-    const header = `${count} result${count === 1 ? '' : 's'}`;
     if (count === 0) {
         return { blocks: ['0 results'], suggestion: { domain: 'flows', action: 'search', isEmpty: true } };
     }
+    const header = `${count} result${count === 1 ? '' : 's'}`;
     const list = renderList('flows', items, [
         field('id'),
-        field('appName', 'app'),
+        field('app_name', 'app'),
         field('name', 'flow'),
+        field('screen_count', 'screens'),
     ]);
     return { blocks: [header, list], suggestion: { domain: 'flows', action: 'search', isEmpty: false } };
 }
 export async function flowsCommand(args, flags) {
     const query = args.join(' ');
-    const mcpArgs = { query };
-    if (flags.platform)
-        mcpArgs.platform = flags.platform;
+    const platform = flags.platform ?? 'ios';
+    const mcpArgs = { query, platform };
     if (flags.limit)
         mcpArgs.limit = flags.limit;
     const result = (await callTool(TOOLS.searchFlows, mcpArgs));
