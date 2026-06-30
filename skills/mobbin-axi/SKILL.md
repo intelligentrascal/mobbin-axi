@@ -1,6 +1,6 @@
 ---
 name: mobbin-axi
-description: "Research real-world UI/UX patterns from production apps via the mobbin-axi CLI — search screens, flows, and apps; inspect screen detail; download reference screenshots. Use when grounding design decisions in proven patterns."
+description: "Research real-world UI/UX patterns from production apps and websites via the mobbin-axi CLI — search screens, user flows, and website sections by natural-language description, and download reference screenshots. Use when grounding design decisions in proven patterns."
 user-invocable: false
 author: Rahil
 metadata:
