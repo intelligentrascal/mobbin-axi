@@ -12,8 +12,11 @@
     "test:watch": "vitest",
     "dev": "tsx bin/mobbin-axi.ts",
     "lint": "eslint .",
-    "prepublishOnly": "npm run build"
+    "prepack": "rm -rf dist && npm run build"
   },
+  "keywords": ["mobbin", "axi", "agent", "cli", "ui", "ux", "design", "toon", "mcp"],
+  "author": "Rahil",
+  "publishConfig": { "access": "public" },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@toon-format/toon": "^2.1.0",
