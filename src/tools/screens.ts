@@ -13,7 +13,7 @@ export function mapScreens(result: { screens?: unknown[] }, _flags: GlobalFlags)
   const count = items.length;
   const header = `${count} result${count === 1 ? '' : 's'}`;
   if (count === 0) {
-    return { blocks: [header + ' (0 results)'], suggestion: { domain: 'screens', action: 'search', isEmpty: true } };
+    return { blocks: ['0 results'], suggestion: { domain: 'screens', action: 'search', isEmpty: true } };
   }
   const list = renderList('screens', items, [
     field('id'),

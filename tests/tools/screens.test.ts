@@ -4,7 +4,8 @@ import { mapScreens } from '../../src/tools/screens.js';
 describe('mapScreens', () => {
   it('renders 3-4 fields and a count, with a definitive empty state', () => {
     const empty = mapScreens({ screens: [] }, { platform: undefined } as any);
-    expect(empty.blocks.join('\n')).toMatch(/0 results/);
+    expect(empty.blocks.join('\n')).not.toContain('(0 results)');
+    expect(empty.blocks).toContain('0 results');
     const filled = mapScreens(
       { screens: [{ id: 's1', screenUrl: 'http://img/1.png', pattern: 'Login', appName: 'Airbnb' }] },
       { platform: undefined } as any,

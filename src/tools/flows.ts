@@ -13,7 +13,7 @@ export function mapFlows(result: { flows?: unknown[] }, _flags: GlobalFlags): To
   const count = items.length;
   const header = `${count} result${count === 1 ? '' : 's'}`;
   if (count === 0) {
-    return { blocks: [header + ' (0 results)'], suggestion: { domain: 'flows', action: 'search', isEmpty: true } };
+    return { blocks: ['0 results'], suggestion: { domain: 'flows', action: 'search', isEmpty: true } };
   }
   const list = renderList('flows', items, [
     field('id'),

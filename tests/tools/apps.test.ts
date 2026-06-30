@@ -4,7 +4,8 @@ import { mapApps } from '../../src/tools/apps.js';
 describe('mapApps', () => {
   it('renders fields and a count, with definitive empty state', () => {
     const empty = mapApps({ apps: [] }, { platform: undefined } as any);
-    expect(empty.blocks.join('\n')).toMatch(/0 results/);
+    expect(empty.blocks.join('\n')).not.toContain('(0 results)');
+    expect(empty.blocks).toContain('0 results');
 
     const filled = mapApps(
       {

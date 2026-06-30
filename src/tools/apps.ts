@@ -13,7 +13,7 @@ export function mapApps(result: { apps?: unknown[] }, _flags: GlobalFlags): Tool
   const count = items.length;
   const header = `${count} result${count === 1 ? '' : 's'}`;
   if (count === 0) {
-    return { blocks: [header + ' (0 results)'], suggestion: { domain: 'apps', action: 'search', isEmpty: true } };
+    return { blocks: ['0 results'], suggestion: { domain: 'apps', action: 'search', isEmpty: true } };
   }
   const list = renderList('apps', items, [
     field('id'),

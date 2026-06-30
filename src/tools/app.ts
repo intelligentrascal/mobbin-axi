@@ -19,7 +19,7 @@ export function mapApp(
   const header = `${count} result${count === 1 ? '' : 's'}`;
 
   if (count === 0) {
-    return { blocks: [header + ' (0 results)'], suggestion: { domain: key, action: 'view', isEmpty: true } };
+    return { blocks: ['0 results'], suggestion: { domain: key, action: 'view', isEmpty: true } };
   }
 
   const fields =
