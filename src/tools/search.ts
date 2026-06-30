@@ -1,7 +1,8 @@
 import { callTool } from '../mcp/client.js';
 import { TOOLS } from '../config.js';
-import { field, type FieldDef, renderList, renderOutput } from '../format/toon.js';
+import { field, type FieldDef, renderList, renderOutput, renderHelp } from '../format/toon.js';
 import type { GlobalFlags } from '../globalFlags.js';
+import { getSuggestions } from '../suggestions.js';
 
 export interface ToolResult {
   blocks: string[];
@@ -52,5 +53,5 @@ export async function searchCommand(args: string[], flags: GlobalFlags): Promise
 
   const result = (await callTool(toolName, mcpArgs)) as Record<string, unknown>;
   const mapped = mapSearch(result, flags);
-  return renderOutput(mapped.blocks);
+  return renderOutput([...mapped.blocks, renderHelp(getSuggestions(mapped.suggestion))]);
 }

@@ -1,7 +1,8 @@
 import { callTool } from '../mcp/client.js';
 import { TOOLS } from '../config.js';
-import { field, renderDetail, renderOutput } from '../format/toon.js';
+import { field, renderDetail, renderOutput, renderHelp } from '../format/toon.js';
 import type { GlobalFlags } from '../globalFlags.js';
+import { getSuggestions } from '../suggestions.js';
 
 export interface ToolResult {
   blocks: string[];
@@ -25,5 +26,5 @@ export async function screenCommand(args: string[], flags: GlobalFlags): Promise
   const screenId = args[0] || '';
   const result = (await callTool(TOOLS.getScreenDetail, { screenId })) as Record<string, unknown>;
   const mapped = mapScreen(result, flags);
-  return renderOutput(mapped.blocks);
+  return renderOutput([...mapped.blocks, renderHelp(getSuggestions(mapped.suggestion))]);
 }

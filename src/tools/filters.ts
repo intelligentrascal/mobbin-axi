@@ -1,7 +1,8 @@
 import { callTool } from '../mcp/client.js';
 import { TOOLS } from '../config.js';
-import { field, renderList, renderOutput } from '../format/toon.js';
+import { field, renderList, renderOutput, renderHelp } from '../format/toon.js';
 import type { GlobalFlags } from '../globalFlags.js';
+import { getSuggestions } from '../suggestions.js';
 
 export interface ToolResult {
   blocks: string[];
@@ -31,5 +32,5 @@ export function mapFilters(result: Record<string, unknown>, _flags: GlobalFlags)
 export async function filtersCommand(_args: string[], flags: GlobalFlags): Promise<string> {
   const result = (await callTool(TOOLS.getFilters, {})) as Record<string, unknown>;
   const mapped = mapFilters(result, flags);
-  return renderOutput(mapped.blocks);
+  return renderOutput([...mapped.blocks, renderHelp(getSuggestions(mapped.suggestion))]);
 }

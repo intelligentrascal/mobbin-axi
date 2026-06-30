@@ -1,7 +1,8 @@
 import { callTool } from '../mcp/client.js';
 import { TOOLS } from '../config.js';
-import { field, renderList, renderOutput } from '../format/toon.js';
+import { field, renderList, renderOutput, renderHelp } from '../format/toon.js';
 import type { GlobalFlags } from '../globalFlags.js';
+import { getSuggestions } from '../suggestions.js';
 
 export interface ToolResult {
   blocks: string[];
@@ -30,5 +31,5 @@ export async function flowsCommand(args: string[], flags: GlobalFlags): Promise<
   if (flags.limit) mcpArgs.limit = flags.limit;
   const result = (await callTool(TOOLS.searchFlows, mcpArgs)) as { flows?: unknown[] };
   const mapped = mapFlows(result, flags);
-  return renderOutput(mapped.blocks);
+  return renderOutput([...mapped.blocks, renderHelp(getSuggestions(mapped.suggestion))]);
 }
