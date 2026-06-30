@@ -1,0 +1,38 @@
+{
+  "name": "mobbin-axi",
+  "version": "0.1.0",
+  "description": "AXI-compliant Mobbin CLI for agents — token-efficient TOON output over Mobbin's MCP",
+  "type": "module",
+  "bin": { "mobbin-axi": "./dist/bin/mobbin-axi.js" },
+  "files": ["dist", "skills/mobbin-axi", "README.md"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "tsx bin/mobbin-axi.ts",
+    "lint": "eslint .",
+    "prepack": "rm -rf dist && npm run build"
+  },
+  "keywords": ["mobbin", "axi", "agent", "cli", "ui", "ux", "design", "toon", "mcp"],
+  "author": "Rahil",
+  "publishConfig": { "access": "public" },
+  "repository": { "type": "git", "url": "git+https://github.com/intelligentrascal/mobbin-axi.git" },
+  "homepage": "https://github.com/intelligentrascal/mobbin-axi#readme",
+  "bugs": { "url": "https://github.com/intelligentrascal/mobbin-axi/issues" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@toon-format/toon": "^2.1.0",
+    "axi-sdk-js": "^0.1.8",
+    "open": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.4.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "license": "MIT"
+}
