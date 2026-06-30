@@ -9,5 +9,7 @@ main()
   })
   .finally(async () => {
     await closeClient();
-    process.exit(process.exitCode ?? 0);
+    const code = process.exitCode ?? 0;
+    if (process.stdout.writableLength === 0) process.exit(code);
+    else process.stdout.once('drain', () => process.exit(code));
   });

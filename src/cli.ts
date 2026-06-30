@@ -2,7 +2,6 @@ import { runAxiCli } from 'axi-sdk-js';
 import { parseGlobalFlags } from './globalFlags.js';
 import { renderOutput, renderHelp } from './format/toon.js';
 import { downloadImages } from './images.js';
-import { AxiError } from './errors.js';
 import { homeCommand } from './context.js';
 import { runLogin, runLogout, authStatus } from './auth/login.js';
 import { setupCommand } from './commands/setup.js';

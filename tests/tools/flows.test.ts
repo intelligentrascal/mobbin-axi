@@ -32,6 +32,8 @@ describe('mapFlows', () => {
     expect(output).toContain('Onboarding Flow');
     expect(output).toContain('1 result');
     expect(output).toContain('f1');
+    expect(output).toContain('4');
+    expect(output).toContain('screens');
     expect(filled.suggestion.domain).toBe('flows');
     expect(filled.suggestion.isEmpty).toBe(false);
   });

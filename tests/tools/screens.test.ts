@@ -30,6 +30,7 @@ describe('mapScreens', () => {
     expect(output).toContain('1 result');
     expect(output).toContain('s1');
     expect(output).toContain('ios');
+    expect(output).toContain('https://mobbin.com/api/mcp/short/abc123');
     expect(filled.suggestion.domain).toBe('screens');
     expect(filled.suggestion.isEmpty).toBe(false);
   });

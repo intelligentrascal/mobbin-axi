@@ -22,15 +22,12 @@ describe('parseGlobalFlags', () => {
   it('extracts --json flag', () => {
     expect(parseGlobalFlags(['--json']).flags.json).toBe(true);
   });
-  it('extracts --popular flag', () => {
-    expect(parseGlobalFlags(['--popular']).flags.popular).toBe(true);
-  });
   it('extracts --type flag with space separator', () => {
     expect(parseGlobalFlags(['--type', 'feed']).flags.type).toBe('feed');
   });
   it('returns defaults when no flags are present', () => {
     const { flags, rest } = parseGlobalFlags(['Login', 'Dashboard']);
-    expect(flags).toEqual({ full: false, json: false, download: false, popular: false });
+    expect(flags).toEqual({ full: false, json: false, download: false });
     expect(rest).toEqual(['Login', 'Dashboard']);
   });
   it('rejects --limit at end-of-args (no value provided)', () => {
@@ -47,6 +44,14 @@ describe('parseGlobalFlags', () => {
   });
   it('rejects --limit when next arg is another flag', () => {
     const { flags } = parseGlobalFlags(['--limit', '--json']);
+    expect(flags.limit).toBeUndefined();
+  });
+  it('rejects --limit= with empty value (equals form)', () => {
+    const { flags } = parseGlobalFlags(['--limit=']);
+    expect(flags.limit).toBeUndefined();
+  });
+  it('rejects --limit with empty string value (space form)', () => {
+    const { flags } = parseGlobalFlags(['--limit', '']);
     expect(flags.limit).toBeUndefined();
   });
   it('treats unknown flags as positional args', () => {

@@ -9,7 +9,7 @@ function cacheDir(): string {
 
 type FetchLike = (
   url: string,
-) => Promise<{ ok: boolean; arrayBuffer: () => Promise<ArrayBuffer> }>;
+) => Promise<{ ok: boolean; status?: number; arrayBuffer: () => Promise<ArrayBuffer> }>;
 
 export async function downloadImages(
   urls: string[],
@@ -32,7 +32,7 @@ export async function downloadImages(
         const res = await fetchImpl(url);
         if (!res.ok) {
           process.stderr.write(
-            `mobbin-axi: image fetch failed (${(res as any).status ?? '?'}) ${url}\n`,
+            `mobbin-axi: image fetch failed (${res.status ?? '?'}) ${url}\n`,
           );
           continue;
         }

@@ -6,22 +6,32 @@ import { loadCredentials } from '../auth/store.js';
 import { AxiError, mapMcpError } from '../errors.js';
 
 let cached: Client | undefined;
+let connecting: Promise<Client> | undefined;
 
 async function connect(): Promise<Client> {
   if (cached) return cached;
-  if (!loadCredentials()?.tokens?.access_token) {
-    throw new AxiError('Not authenticated with Mobbin', 'AUTH_REQUIRED', ['Run `mobbin-axi login`']);
+  if (connecting) return connecting;
+  connecting = (async () => {
+    if (!loadCredentials()?.tokens?.access_token) {
+      throw new AxiError('Not authenticated with Mobbin', 'AUTH_REQUIRED', ['Run `mobbin-axi login`']);
+    }
+    const provider = new MobbinOAuthProvider(() => {
+      throw new AxiError('Mobbin session expired', 'AUTH_REQUIRED', ['Run `mobbin-axi login`']);
+    });
+    const client = new Client({ name: 'mobbin-axi', version: '0.1.0' });
+    await client.connect(new StreamableHTTPClientTransport(new URL(MCP_URL), { authProvider: provider }));
+    cached = client;
+    return client;
+  })();
+  try {
+    return await connecting;
+  } finally {
+    connecting = undefined;
   }
-  const provider = new MobbinOAuthProvider(() => {
-    throw new AxiError('Mobbin session expired', 'AUTH_REQUIRED', ['Run `mobbin-axi login`']);
-  });
-  const client = new Client({ name: 'mobbin-axi', version: '0.1.0' });
-  await client.connect(new StreamableHTTPClientTransport(new URL(MCP_URL), { authProvider: provider }));
-  cached = client;
-  return client;
 }
 
 export async function closeClient(): Promise<void> {
+  connecting = undefined;
   if (cached) {
     try { await cached.close(); } catch { /* best-effort */ }
     cached = undefined;

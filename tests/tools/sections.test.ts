@@ -28,6 +28,7 @@ describe('mapSections', () => {
     expect(output).toContain('Stripe');
     expect(output).toContain('1 result');
     expect(output).toContain('sec1');
+    expect(output).toContain('https://mobbin.com/api/mcp/short/xyz');
     expect(filled.suggestion.domain).toBe('sections');
     expect(filled.suggestion.isEmpty).toBe(false);
   });

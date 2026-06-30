@@ -15,7 +15,8 @@ function extract(item: Record<string, unknown>, schema: FieldDef[]): Record<stri
     const key = def.as ?? ('key' in def ? def.key : def.as);
     if (def.type === 'field') out[key] = item[def.key] ?? null;
     else if (def.type === 'pluck') out[key] = (item[def.key] as Record<string, unknown>)?.[def.subkey] ?? null;
-    else out[key] = def.fn(item);
+    else if (def.type === 'custom') out[key] = def.fn(item);
+    else { const _exhaustive: never = def; throw new Error(`Unreachable: unknown FieldDef type ${(_exhaustive as FieldDef).type}`); }
   }
   return out;
 }
