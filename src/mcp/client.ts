@@ -21,6 +21,13 @@ async function connect(): Promise<Client> {
   return client;
 }
 
+export async function closeClient(): Promise<void> {
+  if (cached) {
+    try { await cached.close(); } catch { /* best-effort */ }
+    cached = undefined;
+  }
+}
+
 export async function callTool(name: string, args: Record<string, unknown>): Promise<unknown> {
   try {
     const client = await connect();
