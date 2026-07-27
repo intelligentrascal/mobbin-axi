@@ -41,6 +41,10 @@ mobbin-axi setup hooks                         install SessionStart ambient-cont
 mobbin-axi help [command]                      usage
 ```
 
+Run `mobbin-axi <command> --help` or `mobbin-axi help <command>` for
+command-specific usage. Unknown flags and invalid command arguments return a
+validation error.
+
 ### Flags
 
 - `--platform ios|web` — platform for `screens`/`flows` (default `ios`; Mobbin

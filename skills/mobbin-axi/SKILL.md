@@ -25,11 +25,15 @@ Auth is one-time: if a command reports "not authenticated", run `npx -y mobbin-a
 - `logout` — clear stored credentials
 - `auth status` — report authentication state
 - `setup hooks` — install SessionStart ambient-context hooks
+- `help [command]` — show top-level or command-specific usage
 
 ## Flags
 - `--platform ios|web` — platform (no android in the MCP; default `ios`)
 - `--limit N` — cap number of results
 - `--download` — fetch screenshots into `~/.cache/mobbin-axi/images/` and print local file paths
+
+Run `<command> --help` or `help <command>` for command-specific usage. Unknown
+flags and invalid command arguments return a validation error.
 
 ## Workflow
 1. `npx -y mobbin-axi` — dashboard: auth status + next-step hints.
