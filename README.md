@@ -48,8 +48,6 @@ mobbin-axi help [command]                      usage
 - `--limit N` — cap results.
 - `--download` — fetch the result screenshots into `~/.cache/mobbin-axi/images/`
   and print local file paths you can open/read.
-- `--full` — disable text truncation.
-- `--json` — raw structured output instead of TOON.
 
 ### Examples
 

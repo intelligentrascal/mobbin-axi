@@ -1,3 +1,5 @@
+import { AxiError } from 'axi-sdk-js';
+
 export interface GlobalFlags {
   platform?: 'ios' | 'web';
   limit?: number;
@@ -17,18 +19,23 @@ export function parseGlobalFlags(args: string[]): { flags: GlobalFlags; rest: st
     else if (a === '--json') flags.json = true;
     else if (a === '--download') flags.download = true;
     else if (a === '--platform') flags.platform = args[++i] as GlobalFlags['platform'];
-    else if (eq('--platform')) flags.platform = eq('--platform') as GlobalFlags['platform'];
+    else if (eq('--platform') !== undefined) flags.platform = eq('--platform') as GlobalFlags['platform'];
     else if (a === '--limit') {
       const val = args[++i];
       if (val !== undefined && val !== '' && !val.startsWith('--')) flags.limit = Number(val);
       else { i--; /* put back */ }
     }
-    else if (eq('--limit')) {
+    else if (eq('--limit') !== undefined) {
       const v = eq('--limit')!;
       if (v !== '') flags.limit = Number(v);
     }
     else if (a === '--type') flags.type = args[++i];
-    else if (eq('--type')) flags.type = eq('--type');
+    else if (eq('--type') !== undefined) flags.type = eq('--type');
+    else if (a.startsWith('--')) {
+      throw new AxiError(`Unknown flag: ${a}`, 'VALIDATION_ERROR', [
+        `Remove ${a} or use a supported flag`,
+      ]);
+    }
     else rest.push(a);
   }
   if (flags.limit !== undefined && !Number.isFinite(flags.limit)) {

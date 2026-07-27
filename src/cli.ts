@@ -14,12 +14,40 @@ export const TOP_HELP = `usage: mobbin-axi [command] [args] [flags]
 commands:
   (none)=dashboard, screens, flows, sections, login, logout, auth, setup
 flags:
-  --platform ios|web, --limit N, --full, --json, --download
+  --platform ios|web, --limit N, --download
 examples:
   mobbin-axi screens "login screen with biometric auth" --platform ios --download
   mobbin-axi flows "onboarding" --platform ios
   mobbin-axi sections "pricing page"
 `;
+
+const COMMAND_HELP: Record<string, string> = {
+  screens: `usage: mobbin-axi screens "<description>" [flags]
+Search UI screens from production apps.
+flags: --platform ios|web, --limit N, --download
+example: mobbin-axi screens "login screen" --platform ios`,
+  flows: `usage: mobbin-axi flows "<description>" [flags]
+Search multi-step user flows.
+flags: --platform ios|web, --limit N, --download
+example: mobbin-axi flows "onboarding" --platform ios`,
+  sections: `usage: mobbin-axi sections "<description>" [flags]
+Search website sections.
+flags: --limit N, --download
+example: mobbin-axi sections "pricing page"`,
+  login: `usage: mobbin-axi login
+Opens your browser for Mobbin OAuth authorization.
+On headless/WSL, prints a URL to paste.`,
+  logout: `usage: mobbin-axi logout
+Clears stored Mobbin credentials.`,
+  auth: `usage: mobbin-axi auth status
+Reports authentication state.`,
+  setup: `usage: mobbin-axi setup hooks
+Installs SessionStart ambient-context hooks.`,
+};
+
+function getCommandHelp(cmd: string): string | undefined {
+  return COMMAND_HELP[cmd];
+}
 
 type Handler = (rest: string[], flags: ReturnType<typeof parseGlobalFlags>['flags']) => Promise<string>;
 
@@ -62,7 +90,13 @@ export async function main(options: { argv?: string[]; stdout?: NodeJS.WritableS
           ? `authenticated: ${authStatus().authenticated}`
           : 'usage: mobbin-axi auth status',
       setup: async (args: string[]) => setupCommand(args),
+      help: async (args: string[]) => {
+        if (args.length > 0 && COMMAND_HELP[args[0]]) {
+          return COMMAND_HELP[args[0]];
+        }
+        return TOP_HELP;
+      },
     },
-    getCommandHelp: () => undefined,
+    getCommandHelp,
   });
 }

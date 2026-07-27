@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { AxiError } from 'axi-sdk-js';
 import { parseGlobalFlags } from '../src/globalFlags.js';
 
 describe('parseGlobalFlags', () => {
@@ -54,9 +55,13 @@ describe('parseGlobalFlags', () => {
     const { flags } = parseGlobalFlags(['--limit', '']);
     expect(flags.limit).toBeUndefined();
   });
-  it('treats unknown flags as positional args', () => {
-    const { flags, rest } = parseGlobalFlags(['--unknown', '--verbose']);
-    expect(flags.full).toBe(false);
-    expect(rest).toEqual(['--unknown', '--verbose']);
+  it('rejects unknown flags with a structured VALIDATION_ERROR', () => {
+    expect(() => parseGlobalFlags(['--unknown'])).toThrow(AxiError);
+    try {
+      parseGlobalFlags(['--unknown', '--verbose']);
+    } catch (e) {
+      expect(e).toBeInstanceOf(AxiError);
+      expect((e as AxiError).code).toBe('VALIDATION_ERROR');
+    }
   });
 });
