@@ -30,8 +30,6 @@ Auth is one-time: if a command reports "not authenticated", run `npx -y mobbin-a
 - `--platform ios|web` — platform (no android in the MCP; default `ios`)
 - `--limit N` — cap number of results
 - `--download` — fetch screenshots into `~/.cache/mobbin-axi/images/` and print local file paths
-- `--full` — disable text truncation
-- `--json` — raw structured output instead of TOON
 
 ## Workflow
 1. `npx -y mobbin-axi` — dashboard: auth status + next-step hints.
@@ -41,5 +39,4 @@ Auth is one-time: if a command reports "not authenticated", run `npx -y mobbin-a
 
 ## Tips
 - Output is TOON-encoded and token-efficient; results show ~4 fields each plus a count.
-- Use `--full` for untruncated text, `--json` for raw structured output.
 - Describe one screen/flow/section in plain language; name an app to filter (e.g. `"Spotify now-playing screen"`).

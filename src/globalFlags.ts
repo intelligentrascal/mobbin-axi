@@ -9,6 +9,15 @@ export interface GlobalFlags {
   type?: string;
 }
 
+function optionValue(option: string, value: string | undefined): string | undefined {
+  if (value?.startsWith('-')) {
+    throw new AxiError(`Invalid value for ${option}: ${value}`, 'VALIDATION_ERROR', [
+      `${option} requires a value that does not start with -`,
+    ]);
+  }
+  return value;
+}
+
 export function parseGlobalFlags(args: string[]): { flags: GlobalFlags; rest: string[] } {
   const flags: GlobalFlags = { full: false, json: false, download: false };
   const rest: string[] = [];
@@ -18,20 +27,19 @@ export function parseGlobalFlags(args: string[]): { flags: GlobalFlags; rest: st
     if (a === '--full') flags.full = true;
     else if (a === '--json') flags.json = true;
     else if (a === '--download') flags.download = true;
-    else if (a === '--platform') flags.platform = args[++i] as GlobalFlags['platform'];
-    else if (eq('--platform') !== undefined) flags.platform = eq('--platform') as GlobalFlags['platform'];
+    else if (a === '--platform') flags.platform = optionValue('--platform', args[++i]) as GlobalFlags['platform'];
+    else if (eq('--platform') !== undefined) flags.platform = optionValue('--platform', eq('--platform')) as GlobalFlags['platform'];
     else if (a === '--limit') {
-      const val = args[++i];
-      if (val !== undefined && val !== '' && !val.startsWith('--')) flags.limit = Number(val);
-      else { i--; /* put back */ }
+      const val = optionValue('--limit', args[++i]);
+      if (val !== undefined && val !== '') flags.limit = Number(val);
     }
     else if (eq('--limit') !== undefined) {
-      const v = eq('--limit')!;
+      const v = optionValue('--limit', eq('--limit'))!;
       if (v !== '') flags.limit = Number(v);
     }
-    else if (a === '--type') flags.type = args[++i];
-    else if (eq('--type') !== undefined) flags.type = eq('--type');
-    else if (a.startsWith('--')) {
+    else if (a === '--type') flags.type = optionValue('--type', args[++i]);
+    else if (eq('--type') !== undefined) flags.type = optionValue('--type', eq('--type'));
+    else if (a.startsWith('-')) {
       throw new AxiError(`Unknown flag: ${a}`, 'VALIDATION_ERROR', [
         `Remove ${a} or use a supported flag`,
       ]);

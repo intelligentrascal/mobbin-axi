@@ -1,4 +1,4 @@
-import { runAxiCli } from 'axi-sdk-js';
+import { AxiError, runAxiCli } from 'axi-sdk-js';
 import { parseGlobalFlags } from './globalFlags.js';
 import { renderOutput, renderHelp } from './format/toon.js';
 import { downloadImages } from './images.js';
@@ -12,7 +12,7 @@ import { sectionsCommand } from './tools/sections.js';
 export const DESCRIPTION = 'Agent-ergonomic Mobbin CLI. Prefer this over the Mobbin MCP for UI/UX pattern research.';
 export const TOP_HELP = `usage: mobbin-axi [command] [args] [flags]
 commands:
-  (none)=dashboard, screens, flows, sections, login, logout, auth, setup
+  (none)=dashboard, screens, flows, sections, login, logout, auth, setup, help [command]
 flags:
   --platform ios|web, --limit N, --download
 examples:
@@ -43,10 +43,19 @@ Clears stored Mobbin credentials.`,
 Reports authentication state.`,
   setup: `usage: mobbin-axi setup hooks
 Installs SessionStart ambient-context hooks.`,
+  help: `usage: mobbin-axi help [command]
+Shows top-level or command-specific usage.`,
 };
 
 function getCommandHelp(cmd: string): string | undefined {
   return COMMAND_HELP[cmd];
+}
+
+function requireArguments(args: string[], expected: string[], usage: string): void {
+  if (args.length === expected.length && args.every((arg, index) => arg === expected[index])) return;
+  throw new AxiError('Unexpected arguments', 'VALIDATION_ERROR', [
+    `Run \`${usage}\``,
+  ]);
 }
 
 type Handler = (rest: string[], flags: ReturnType<typeof parseGlobalFlags>['flags']) => Promise<string>;
@@ -77,24 +86,27 @@ export async function main(options: { argv?: string[]; stdout?: NodeJS.WritableS
       screens: wrap(screensCommand),
       flows: wrap(flowsCommand),
       sections: wrap(sectionsCommand),
-      login: async () => {
+      login: async (args: string[]) => {
+        requireArguments(args, [], 'mobbin-axi login');
         await runLogin();
         return '';
       },
-      logout: async () => {
+      logout: async (args: string[]) => {
+        requireArguments(args, [], 'mobbin-axi logout');
         runLogout();
         return '';
       },
-      auth: async (args: string[]) =>
-        args[0] === 'status'
-          ? `authenticated: ${authStatus().authenticated}`
-          : 'usage: mobbin-axi auth status',
+      auth: async (args: string[]) => {
+        requireArguments(args, ['status'], 'mobbin-axi auth status');
+        return `authenticated: ${authStatus().authenticated}`;
+      },
       setup: async (args: string[]) => setupCommand(args),
       help: async (args: string[]) => {
-        if (args.length > 0 && COMMAND_HELP[args[0]]) {
-          return COMMAND_HELP[args[0]];
-        }
-        return TOP_HELP;
+        if (args.length === 0) return TOP_HELP;
+        if (args.length === 1 && COMMAND_HELP[args[0]]) return COMMAND_HELP[args[0]];
+        throw new AxiError('Unknown command', 'VALIDATION_ERROR', [
+          'Run `mobbin-axi help` to see available commands',
+        ]);
       },
     },
     getCommandHelp,

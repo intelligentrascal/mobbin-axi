@@ -43,9 +43,8 @@ describe('parseGlobalFlags', () => {
     const { flags } = parseGlobalFlags(['--limit=abc']);
     expect(flags.limit).toBeUndefined();
   });
-  it('rejects --limit when next arg is another flag', () => {
-    const { flags } = parseGlobalFlags(['--limit', '--json']);
-    expect(flags.limit).toBeUndefined();
+  it('rejects a hyphen-prefixed option value', () => {
+    expect(() => parseGlobalFlags(['--limit', '--json'])).toThrow(AxiError);
   });
   it('rejects --limit= with empty value (equals form)', () => {
     const { flags } = parseGlobalFlags(['--limit=']);
@@ -63,5 +62,12 @@ describe('parseGlobalFlags', () => {
       expect(e).toBeInstanceOf(AxiError);
       expect((e as AxiError).code).toBe('VALIDATION_ERROR');
     }
+  });
+  it('rejects short flags', () => {
+    expect(() => parseGlobalFlags(['-x'])).toThrow(AxiError);
+  });
+  it('rejects option-like values', () => {
+    expect(() => parseGlobalFlags(['--platform', '--typo'])).toThrow(AxiError);
+    expect(() => parseGlobalFlags(['--platform=--typo'])).toThrow(AxiError);
   });
 });
