@@ -19,34 +19,44 @@ describe('cli', () => {
   });
 
   describe('--help on subcommands', () => {
-    it('logout --help shows help text and does NOT clear credentials', { timeout: 15000 }, async () => {
-      const credPath = join(process.env.MOBBIN_CONFIG_DIR!, 'credentials.json');
-      mkdirSync(process.env.MOBBIN_CONFIG_DIR!, { recursive: true });
-      writeFileSync(credPath, JSON.stringify({ tokens: { access_token: 'test-dummy' } }), { mode: 0o600 });
+    it(
+      'logout --help shows help text and does NOT clear credentials',
+      { timeout: 15000 },
+      async () => {
+        const credPath = join(process.env.MOBBIN_CONFIG_DIR!, 'credentials.json');
+        mkdirSync(process.env.MOBBIN_CONFIG_DIR!, { recursive: true });
+        writeFileSync(credPath, JSON.stringify({ tokens: { access_token: 'test-dummy' } }), {
+          mode: 0o600,
+        });
 
-      const chunks: string[] = [];
-      const stdout = { write: (s: string) => (chunks.push(s), true) } as any;
-      const { main } = await import('../src/cli.js');
-      await main({ argv: ['logout', '--help'], stdout });
+        const chunks: string[] = [];
+        const stdout = { write: (s: string) => (chunks.push(s), true) } as any;
+        const { main } = await import('../src/cli.js');
+        await main({ argv: ['logout', '--help'], stdout });
 
-      const output = chunks.join('');
-      expect(output).toMatch(/logout/i);
-      expect(output).not.toMatch(/Logged out/i);
-      expect(existsSync(credPath)).toBe(true);
-      expect(readFileSync(credPath, 'utf-8')).toContain('access_token');
-    });
+        const output = chunks.join('');
+        expect(output).toMatch(/logout/i);
+        expect(output).not.toMatch(/Logged out/i);
+        expect(existsSync(credPath)).toBe(true);
+        expect(readFileSync(credPath, 'utf-8')).toContain('access_token');
+      },
+    );
 
-    it('screens --help shows help text and does not invoke auth/handler', { timeout: 15000 }, async () => {
-      const chunks: string[] = [];
-      const stdout = { write: (s: string) => (chunks.push(s), true) } as any;
-      const { main } = await import('../src/cli.js');
-      await main({ argv: ['screens', '--help'], stdout });
+    it(
+      'screens --help shows help text and does not invoke auth/handler',
+      { timeout: 15000 },
+      async () => {
+        const chunks: string[] = [];
+        const stdout = { write: (s: string) => (chunks.push(s), true) } as any;
+        const { main } = await import('../src/cli.js');
+        await main({ argv: ['screens', '--help'], stdout });
 
-      const output = chunks.join('');
-      expect(output).toMatch(/screens/i);
-      expect(output).not.toMatch(/AUTH_REQUIRED/i);
-      expect(output).not.toMatch(/Not authenticated/i);
-    });
+        const output = chunks.join('');
+        expect(output).toMatch(/screens/i);
+        expect(output).not.toMatch(/AUTH_REQUIRED/i);
+        expect(output).not.toMatch(/Not authenticated/i);
+      },
+    );
 
     it('login --help shows help text and does not open browser', { timeout: 15000 }, async () => {
       const chunks: string[] = [];
@@ -97,7 +107,9 @@ describe('cli', () => {
     it('rejects unknown logout flags before clearing credentials', { timeout: 15000 }, async () => {
       const credPath = join(process.env.MOBBIN_CONFIG_DIR!, 'credentials.json');
       mkdirSync(process.env.MOBBIN_CONFIG_DIR!, { recursive: true });
-      writeFileSync(credPath, JSON.stringify({ tokens: { access_token: 'test-dummy' } }), { mode: 0o600 });
+      writeFileSync(credPath, JSON.stringify({ tokens: { access_token: 'test-dummy' } }), {
+        mode: 0o600,
+      });
 
       const chunks: string[] = [];
       const stdout = { write: (s: string) => (chunks.push(s), true) } as any;

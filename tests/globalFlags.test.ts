@@ -4,7 +4,15 @@ import { parseGlobalFlags } from '../src/globalFlags.js';
 
 describe('parseGlobalFlags', () => {
   it('extracts known flags and leaves positional args', () => {
-    const { flags, rest } = parseGlobalFlags(['Login', '--platform', 'ios', '--limit', '5', '--full', '--download']);
+    const { flags, rest } = parseGlobalFlags([
+      'Login',
+      '--platform',
+      'ios',
+      '--limit',
+      '5',
+      '--full',
+      '--download',
+    ]);
     expect(flags.platform).toBe('ios');
     expect(flags.limit).toBe(5);
     expect(flags.full).toBe(true);

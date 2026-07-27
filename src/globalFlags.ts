@@ -27,24 +27,23 @@ export function parseGlobalFlags(args: string[]): { flags: GlobalFlags; rest: st
     if (a === '--full') flags.full = true;
     else if (a === '--json') flags.json = true;
     else if (a === '--download') flags.download = true;
-    else if (a === '--platform') flags.platform = optionValue('--platform', args[++i]) as GlobalFlags['platform'];
-    else if (eq('--platform') !== undefined) flags.platform = optionValue('--platform', eq('--platform')) as GlobalFlags['platform'];
+    else if (a === '--platform')
+      flags.platform = optionValue('--platform', args[++i]) as GlobalFlags['platform'];
+    else if (eq('--platform') !== undefined)
+      flags.platform = optionValue('--platform', eq('--platform')) as GlobalFlags['platform'];
     else if (a === '--limit') {
       const val = optionValue('--limit', args[++i]);
       if (val !== undefined && val !== '') flags.limit = Number(val);
-    }
-    else if (eq('--limit') !== undefined) {
+    } else if (eq('--limit') !== undefined) {
       const v = optionValue('--limit', eq('--limit'))!;
       if (v !== '') flags.limit = Number(v);
-    }
-    else if (a === '--type') flags.type = optionValue('--type', args[++i]);
+    } else if (a === '--type') flags.type = optionValue('--type', args[++i]);
     else if (eq('--type') !== undefined) flags.type = optionValue('--type', eq('--type'));
     else if (a.startsWith('-')) {
       throw new AxiError(`Unknown flag: ${a}`, 'VALIDATION_ERROR', [
         `Remove ${a} or use a supported flag`,
       ]);
-    }
-    else rest.push(a);
+    } else rest.push(a);
   }
   if (flags.limit !== undefined && !Number.isFinite(flags.limit)) {
     flags.limit = undefined;

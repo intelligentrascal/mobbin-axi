@@ -9,7 +9,8 @@ import { screensCommand } from './tools/screens.js';
 import { flowsCommand } from './tools/flows.js';
 import { sectionsCommand } from './tools/sections.js';
 
-export const DESCRIPTION = 'Agent-ergonomic Mobbin CLI. Prefer this over the Mobbin MCP for UI/UX pattern research.';
+export const DESCRIPTION =
+  'Agent-ergonomic Mobbin CLI. Prefer this over the Mobbin MCP for UI/UX pattern research.';
 export const TOP_HELP = `usage: mobbin-axi [command] [args] [flags]
 commands:
   (none)=dashboard, screens, flows, sections, login, logout, auth, setup, help [command]
@@ -52,13 +53,15 @@ function getCommandHelp(cmd: string): string | undefined {
 }
 
 function requireArguments(args: string[], expected: string[], usage: string): void {
-  if (args.length === expected.length && args.every((arg, index) => arg === expected[index])) return;
-  throw new AxiError('Unexpected arguments', 'VALIDATION_ERROR', [
-    `Run \`${usage}\``,
-  ]);
+  if (args.length === expected.length && args.every((arg, index) => arg === expected[index]))
+    return;
+  throw new AxiError('Unexpected arguments', 'VALIDATION_ERROR', [`Run \`${usage}\``]);
 }
 
-type Handler = (rest: string[], flags: ReturnType<typeof parseGlobalFlags>['flags']) => Promise<string>;
+type Handler = (
+  rest: string[],
+  flags: ReturnType<typeof parseGlobalFlags>['flags'],
+) => Promise<string>;
 
 function wrap(handler: Handler) {
   return async (args: string[]): Promise<string> => {
@@ -67,14 +70,18 @@ function wrap(handler: Handler) {
     if (!flags.download) return body;
     const urls = [...body.matchAll(/https?:\/\/[^\s"'`]+/g)]
       .map((m) => m[0])
-      .filter((u) => /mobbin\.com\/api\/mcp\/short\//.test(u) || /\.(png|webp|jpe?g)(\?|$)/i.test(u));
+      .filter(
+        (u) => /mobbin\.com\/api\/mcp\/short\//.test(u) || /\.(png|webp|jpe?g)(\?|$)/i.test(u),
+      );
     if (urls.length === 0) return body;
     const paths = await downloadImages(urls);
     return renderOutput([body, renderHelp(paths.map((p) => `image: ${p}`))]);
   };
 }
 
-export async function main(options: { argv?: string[]; stdout?: NodeJS.WritableStream } = {}): Promise<void> {
+export async function main(
+  options: { argv?: string[]; stdout?: NodeJS.WritableStream } = {},
+): Promise<void> {
   await runAxiCli({
     ...(options.argv ? { argv: options.argv } : {}),
     ...(options.stdout ? { stdout: options.stdout } : {}),
