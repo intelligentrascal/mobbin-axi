@@ -41,6 +41,10 @@ mobbin-axi setup hooks                         install SessionStart ambient-cont
 mobbin-axi help [command]                      usage
 ```
 
+Run `mobbin-axi <command> --help` or `mobbin-axi help <command>` for
+command-specific usage. Unknown flags and invalid command arguments return a
+validation error.
+
 ### Flags
 
 - `--platform ios|web` — platform for `screens`/`flows` (default `ios`; Mobbin
@@ -48,8 +52,6 @@ mobbin-axi help [command]                      usage
 - `--limit N` — cap results.
 - `--download` — fetch the result screenshots into `~/.cache/mobbin-axi/images/`
   and print local file paths you can open/read.
-- `--full` — disable text truncation.
-- `--json` — raw structured output instead of TOON.
 
 ### Examples
 
