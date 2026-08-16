@@ -49,11 +49,17 @@ export async function main(options: { argv?: string[]; stdout?: NodeJS.WritableS
       screens: wrap(screensCommand),
       flows: wrap(flowsCommand),
       sections: wrap(sectionsCommand),
-      login: async () => {
+      login: async (args: string[]) => {
+        if (args[0] === '--help') return 'usage: mobbin-axi login\nOpen a browser window to authenticate with Mobbin.';
+        const { flags: loginFlags } = parseGlobalFlags(args);
+        void loginFlags; // validated; no flags used
         await runLogin();
         return '';
       },
-      logout: async () => {
+      logout: async (args: string[]) => {
+        if (args[0] === '--help') return 'usage: mobbin-axi logout\nClear stored Mobbin credentials.';
+        const { flags: logoutFlags } = parseGlobalFlags(args);
+        void logoutFlags; // validated; no flags used
         runLogout();
         return '';
       },
