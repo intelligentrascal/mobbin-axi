@@ -1,4 +1,5 @@
 import { runAxiCli } from 'axi-sdk-js';
+import { AxiError } from './errors.js';
 import { parseGlobalFlags } from './globalFlags.js';
 import { renderOutput, renderHelp } from './format/toon.js';
 import { downloadImages } from './images.js';
@@ -51,23 +52,28 @@ export async function main(options: { argv?: string[]; stdout?: NodeJS.WritableS
       sections: wrap(sectionsCommand),
       login: async (args: string[]) => {
         if (args[0] === '--help') return 'usage: mobbin-axi login\nOpen a browser window to authenticate with Mobbin.';
-        const { flags: loginFlags } = parseGlobalFlags(args);
-        void loginFlags; // validated; no flags used
+        const { flags: loginFlags, rest: loginRest } = parseGlobalFlags(args);
+        void loginFlags;
+        if (loginRest.length > 0) throw new AxiError(`unexpected argument: ${loginRest[0]}`, 'VALIDATION_ERROR', ['Usage: mobbin-axi login']);
         await runLogin();
         return '';
       },
       logout: async (args: string[]) => {
         if (args[0] === '--help') return 'usage: mobbin-axi logout\nClear stored Mobbin credentials.';
-        const { flags: logoutFlags } = parseGlobalFlags(args);
-        void logoutFlags; // validated; no flags used
+        const { flags: logoutFlags, rest: logoutRest } = parseGlobalFlags(args);
+        void logoutFlags;
+        if (logoutRest.length > 0) throw new AxiError(`unexpected argument: ${logoutRest[0]}`, 'VALIDATION_ERROR', ['Usage: mobbin-axi logout']);
         runLogout();
         return '';
       },
-      auth: async (args: string[]) =>
-        args[0] === 'status'
-          ? `authenticated: ${authStatus().authenticated}`
-          : 'usage: mobbin-axi auth status',
-      setup: async (args: string[]) => setupCommand(args),
+      auth: async (args: string[]) => {
+        if (args.includes('--help')) return 'usage: mobbin-axi auth status\nCheck authentication status.';
+        return args[0] === 'status' ? `authenticated: ${authStatus().authenticated}` : 'usage: mobbin-axi auth status';
+      },
+      setup: async (args: string[]) => {
+        if (args.includes('--help')) return 'usage: mobbin-axi setup hooks\nInstall session hooks.';
+        return setupCommand(args);
+      },
     },
     getCommandHelp: () => undefined,
   });

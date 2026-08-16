@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Fast path: handle version flags before loading the full CLI command graph
-if (process.argv[2] === '--version' || process.argv[2] === '-v' || process.argv[2] === '-V') {
-  process.stdout.write('0.1.1\n');
+// Only match exact single-argument version invocations; extra args fall through to the CLI
+if ((process.argv[2] === '--version' || process.argv[2] === '-v' || process.argv[2] === '-V') && process.argv.length === 3) {
+  process.stdout.write('0.1.3\n');
   process.exit(0);
 }
 const [{ main }, { AxiError, exitCodeForError }, { closeClient }] = await Promise.all([
