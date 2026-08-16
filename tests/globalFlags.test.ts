@@ -57,9 +57,8 @@ describe('parseGlobalFlags', () => {
   it('rejects --limit= with empty value (equals form)', () => {
     expect(() => parseGlobalFlags(['--limit='])).toThrow('--limit requires a positive integer value');
   });
-  it('treats unknown flags as positional args', () => {
-    const { flags, rest } = parseGlobalFlags(['--unknown', '--verbose']);
-    expect(flags.full).toBe(false);
-    expect(rest).toEqual(['--unknown', '--verbose']);
+  it('rejects unknown flags with VALIDATION_ERROR', () => {
+    expect(() => parseGlobalFlags(['--unknown', '--verbose'])).toThrow('--unknown is not a recognized flag');
+    expect(() => parseGlobalFlags(['--verbose'])).toThrow('--verbose is not a recognized flag');
   });
 });

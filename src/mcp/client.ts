@@ -18,7 +18,7 @@ async function connect(): Promise<Client> {
     const provider = new MobbinOAuthProvider(() => {
       throw new AxiError('Mobbin session expired', 'AUTH_REQUIRED', ['Run `mobbin-axi login`']);
     });
-    const client = new Client({ name: 'mobbin-axi', version: '0.1.0' });
+    const client = new Client({ name: 'mobbin-axi', version: '0.1.1' });
     await client.connect(new StreamableHTTPClientTransport(new URL(MCP_URL), { authProvider: provider }));
     cached = client;
     return client;

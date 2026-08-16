@@ -58,6 +58,13 @@ export function parseGlobalFlags(args: string[]): { flags: GlobalFlags; rest: st
       );
     }
 
+    else if (a.startsWith('--')) {
+      throw new AxiError(
+        `${a} is not a recognized flag`,
+        'VALIDATION_ERROR',
+        ['Supported flags: --platform ios|web, --limit N, --full, --json, --download'],
+      );
+    }
     else rest.push(a);
   }
   return { flags, rest };

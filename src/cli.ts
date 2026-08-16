@@ -42,7 +42,7 @@ export async function main(options: { argv?: string[]; stdout?: NodeJS.WritableS
     ...(options.argv ? { argv: options.argv } : {}),
     ...(options.stdout ? { stdout: options.stdout } : {}),
     description: DESCRIPTION,
-    version: '0.1.0',
+    version: '0.1.1',
     topLevelHelp: TOP_HELP,
     home: async () => homeCommand(),
     commands: {

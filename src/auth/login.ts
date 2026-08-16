@@ -63,7 +63,7 @@ export async function runLogin(): Promise<void> {
       }
     })();
   });
-  const client = new Client({ name: 'mobbin-axi', version: '0.1.0' });
+  const client = new Client({ name: 'mobbin-axi', version: '0.1.1' });
   try {
     await client.connect(
       new StreamableHTTPClientTransport(new URL(MCP_URL), {
@@ -96,7 +96,7 @@ export async function runLogin(): Promise<void> {
   const code = params.get('code');
   if (!code) throw new Error('authorization code missing from callback');
   await authTransport.finishAuth(code);
-  await new Client({ name: 'mobbin-axi', version: '0.1.0' }).connect(
+  await new Client({ name: 'mobbin-axi', version: '0.1.1' }).connect(
     new StreamableHTTPClientTransport(new URL(MCP_URL), {
       authProvider: provider,
     }),
