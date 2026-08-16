@@ -1,6 +1,56 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mapMcpError } from '../../src/errors.js';
 import { parseTextContent } from '../../src/mcp/client.js';
+
+// isError handling via callTool
+vi.mock('@modelcontextprotocol/sdk/client/index.js', () => ({
+  Client: vi.fn().mockImplementation(() => ({
+    connect: vi.fn().mockResolvedValue(undefined),
+    callTool: vi.fn(),
+    close: vi.fn().mockResolvedValue(undefined),
+  })),
+}));
+vi.mock('@modelcontextprotocol/sdk/client/streamableHttp.js', () => ({
+  StreamableHTTPClientTransport: vi.fn(),
+}));
+vi.mock('../../src/auth/store.js', () => ({
+  loadCredentials: vi.fn().mockReturnValue({ tokens: { access_token: 'tok' } }),
+}));
+vi.mock('../../src/auth/provider.js', () => ({
+  MobbinOAuthProvider: vi.fn().mockImplementation(() => ({})),
+}));
+
+describe('callTool isError handling', () => {
+  beforeEach(async () => {
+    vi.resetModules();
+  });
+
+  it('throws AxiError with MCP_ERROR when isError is true', async () => {
+    const { Client } = await import('@modelcontextprotocol/sdk/client/index.js');
+    const mockCallTool = vi.fn().mockResolvedValue({
+      isError: true,
+      content: [{ type: 'text', text: 'Tool execution failed: rate limited' }],
+    });
+    (Client as ReturnType<typeof vi.fn>).mockImplementation(() => ({
+      connect: vi.fn().mockResolvedValue(undefined),
+      callTool: mockCallTool,
+      close: vi.fn().mockResolvedValue(undefined),
+    }));
+    const { callTool } = await import('../../src/mcp/client.js');
+    await expect(callTool('search_screens', {})).rejects.toThrow('Tool execution failed: rate limited');
+  });
+
+  it('throws AxiError with generic message when isError=true but no text content', async () => {
+    const { Client } = await import('@modelcontextprotocol/sdk/client/index.js');
+    (Client as ReturnType<typeof vi.fn>).mockImplementation(() => ({
+      connect: vi.fn().mockResolvedValue(undefined),
+      callTool: vi.fn().mockResolvedValue({ isError: true, content: [] }),
+      close: vi.fn().mockResolvedValue(undefined),
+    }));
+    const { callTool } = await import('../../src/mcp/client.js');
+    await expect(callTool('search_screens', {})).rejects.toThrow('MCP tool returned an error');
+  });
+});
 
 describe('mapMcpError', () => {
   it('maps 401/unauthorized to AUTH_REQUIRED with a login hint', () => {

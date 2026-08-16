@@ -1,5 +1,16 @@
-import { describe, it, expect } from 'vitest';
-import { mapScreens } from '../../src/tools/screens.js';
+import { describe, it, expect, vi } from 'vitest';
+import { mapScreens, screensCommand } from '../../src/tools/screens.js';
+
+vi.mock('../../src/mcp/client.js', () => ({ callTool: vi.fn() }));
+
+describe('screensCommand empty query', () => {
+  it('throws VALIDATION_ERROR when query is empty', async () => {
+    await expect(screensCommand([], {} as any)).rejects.toThrow('search query is required');
+  });
+  it('throws VALIDATION_ERROR when query is whitespace only', async () => {
+    await expect(screensCommand(['   '], {} as any)).rejects.toThrow('search query is required');
+  });
+});
 
 describe('mapScreens', () => {
   it('returns definitive empty state for 0 results', () => {

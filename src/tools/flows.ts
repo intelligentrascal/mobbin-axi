@@ -4,6 +4,7 @@ import { field, renderList, renderOutput, renderHelp } from '../format/toon.js';
 import type { GlobalFlags } from '../globalFlags.js';
 import { getSuggestions } from '../suggestions.js';
 import type { ToolResult } from './types.js';
+import { AxiError } from '../errors.js';
 
 export function mapFlows(result: { flows?: unknown[] }, _flags: GlobalFlags): ToolResult {
   const items = (result.flows ?? []) as Record<string, unknown>[];
@@ -24,7 +25,8 @@ export function mapFlows(result: { flows?: unknown[] }, _flags: GlobalFlags): To
 }
 
 export async function flowsCommand(args: string[], flags: GlobalFlags): Promise<string> {
-  const query = args.join(' ');
+  const query = args.join(' ').trim();
+  if (!query) throw new AxiError('search query is required', 'VALIDATION_ERROR', ['e.g., mobbin-axi flows "onboarding"']);
   const platform = flags.platform ?? 'ios';
   const mcpArgs: Record<string, unknown> = { query, platform };
   if (flags.limit) mcpArgs.limit = flags.limit;

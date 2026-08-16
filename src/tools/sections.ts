@@ -4,6 +4,7 @@ import { field, renderList, renderOutput, renderHelp } from '../format/toon.js';
 import type { GlobalFlags } from '../globalFlags.js';
 import { getSuggestions } from '../suggestions.js';
 import type { ToolResult } from './types.js';
+import { AxiError } from '../errors.js';
 
 export function mapSections(result: { sections?: unknown[] }, _flags: GlobalFlags): ToolResult {
   const items = (result.sections ?? []) as Record<string, unknown>[];
@@ -23,7 +24,8 @@ export function mapSections(result: { sections?: unknown[] }, _flags: GlobalFlag
 }
 
 export async function sectionsCommand(args: string[], flags: GlobalFlags): Promise<string> {
-  const query = args.join(' ');
+  const query = args.join(' ').trim();
+  if (!query) throw new AxiError('search query is required', 'VALIDATION_ERROR', ['e.g., mobbin-axi sections "pricing page"']);
   const mcpArgs: Record<string, unknown> = { query };
   if (flags.limit) mcpArgs.limit = flags.limit;
   const result = (await callTool(TOOLS.searchSections, mcpArgs)) as { sections?: unknown[] };

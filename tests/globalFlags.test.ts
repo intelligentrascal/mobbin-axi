@@ -16,43 +16,46 @@ describe('parseGlobalFlags', () => {
   it('accepts --limit=N equals form', () => {
     expect(parseGlobalFlags(['--limit=10']).flags.limit).toBe(10);
   });
-  it('accepts --type=equals form', () => {
-    expect(parseGlobalFlags(['--type=feed']).flags.type).toBe('feed');
-  });
   it('extracts --json flag', () => {
     expect(parseGlobalFlags(['--json']).flags.json).toBe(true);
-  });
-  it('extracts --type flag with space separator', () => {
-    expect(parseGlobalFlags(['--type', 'feed']).flags.type).toBe('feed');
   });
   it('returns defaults when no flags are present', () => {
     const { flags, rest } = parseGlobalFlags(['Login', 'Dashboard']);
     expect(flags).toEqual({ full: false, json: false, download: false });
     expect(rest).toEqual(['Login', 'Dashboard']);
   });
-  it('rejects --limit at end-of-args (no value provided)', () => {
-    const { flags } = parseGlobalFlags(['--limit']);
-    expect(flags.limit).toBeUndefined();
+  it('rejects --type with VALIDATION_ERROR', () => {
+    expect(() => parseGlobalFlags(['--type', 'feed'])).toThrow('--type is not a recognized flag');
+  });
+  it('rejects --type=equals form with VALIDATION_ERROR', () => {
+    expect(() => parseGlobalFlags(['--type=feed'])).toThrow('--type is not a recognized flag');
+  });
+  it('rejects invalid --platform with VALIDATION_ERROR', () => {
+    expect(() => parseGlobalFlags(['--platform', 'android'])).toThrow('--platform must be');
+  });
+  it('rejects invalid --platform=equals form', () => {
+    expect(() => parseGlobalFlags(['--platform=android'])).toThrow('--platform must be');
   });
   it('rejects --limit with non-numeric value', () => {
-    const { flags } = parseGlobalFlags(['--limit', 'abc']);
-    expect(flags.limit).toBeUndefined();
+    expect(() => parseGlobalFlags(['--limit', 'abc'])).toThrow('--limit must be a positive integer');
   });
   it('rejects --limit=NaN via equals form', () => {
-    const { flags } = parseGlobalFlags(['--limit=abc']);
-    expect(flags.limit).toBeUndefined();
+    expect(() => parseGlobalFlags(['--limit=abc'])).toThrow('--limit must be a positive integer');
+  });
+  it('rejects --limit with zero', () => {
+    expect(() => parseGlobalFlags(['--limit', '0'])).toThrow('--limit must be a positive integer');
+  });
+  it('rejects --limit with negative value', () => {
+    expect(() => parseGlobalFlags(['--limit', '-1'])).toThrow('--limit must be a positive integer');
+  });
+  it('rejects --limit at end-of-args (no value)', () => {
+    expect(() => parseGlobalFlags(['--limit'])).toThrow('--limit requires a positive integer value');
   });
   it('rejects --limit when next arg is another flag', () => {
-    const { flags } = parseGlobalFlags(['--limit', '--json']);
-    expect(flags.limit).toBeUndefined();
+    expect(() => parseGlobalFlags(['--limit', '--json'])).toThrow('--limit requires a positive integer value');
   });
   it('rejects --limit= with empty value (equals form)', () => {
-    const { flags } = parseGlobalFlags(['--limit=']);
-    expect(flags.limit).toBeUndefined();
-  });
-  it('rejects --limit with empty string value (space form)', () => {
-    const { flags } = parseGlobalFlags(['--limit', '']);
-    expect(flags.limit).toBeUndefined();
+    expect(() => parseGlobalFlags(['--limit='])).toThrow('--limit requires a positive integer value');
   });
   it('treats unknown flags as positional args', () => {
     const { flags, rest } = parseGlobalFlags(['--unknown', '--verbose']);

@@ -10,7 +10,14 @@ export async function homeCommand(): Promise<string> {
       renderHelp(['Run `mobbin-axi login` to authenticate with Mobbin']),
     ]);
   }
+  const statusBlock = [
+    'authenticated: true',
+    'service: Mobbin UI/UX pattern search',
+    'commands: screens, flows, sections',
+    'platforms: ios, web',
+  ].join('\n');
   return renderOutput([
+    statusBlock,
     renderHelp(getSuggestions({ domain: 'home', action: 'home', isEmpty: false })),
   ]);
 }

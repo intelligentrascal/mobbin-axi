@@ -1,5 +1,13 @@
-import { describe, it, expect } from 'vitest';
-import { mapSections } from '../../src/tools/sections.js';
+import { describe, it, expect, vi } from 'vitest';
+import { mapSections, sectionsCommand } from '../../src/tools/sections.js';
+
+vi.mock('../../src/mcp/client.js', () => ({ callTool: vi.fn() }));
+
+describe('sectionsCommand empty query', () => {
+  it('throws VALIDATION_ERROR when query is empty', async () => {
+    await expect(sectionsCommand([], {} as any)).rejects.toThrow('search query is required');
+  });
+});
 
 describe('mapSections', () => {
   it('returns definitive empty state for 0 results', () => {

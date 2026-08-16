@@ -42,6 +42,13 @@ export async function callTool(name: string, args: Record<string, unknown>): Pro
   try {
     const client = await connect();
     const result = await client.callTool({ name, arguments: args });
+    if ((result as { isError?: boolean }).isError) {
+      const items = Array.isArray((result as { content?: unknown }).content)
+        ? (result as { content: Array<{ type: string; text?: string }> }).content
+        : [];
+      const text = items.find((c) => c.type === 'text')?.text ?? 'MCP tool returned an error';
+      throw new AxiError(text, 'MCP_ERROR');
+    }
     return (result as { structuredContent?: unknown }).structuredContent ?? parseTextContent(result);
   } catch (error) {
     if (error instanceof AxiError) throw error;

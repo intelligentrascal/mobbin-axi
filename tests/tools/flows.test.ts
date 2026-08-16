@@ -1,5 +1,13 @@
-import { describe, it, expect } from 'vitest';
-import { mapFlows } from '../../src/tools/flows.js';
+import { describe, it, expect, vi } from 'vitest';
+import { mapFlows, flowsCommand } from '../../src/tools/flows.js';
+
+vi.mock('../../src/mcp/client.js', () => ({ callTool: vi.fn() }));
+
+describe('flowsCommand empty query', () => {
+  it('throws VALIDATION_ERROR when query is empty', async () => {
+    await expect(flowsCommand([], {} as any)).rejects.toThrow('search query is required');
+  });
+});
 
 describe('mapFlows', () => {
   it('returns definitive empty state for 0 results', () => {

@@ -1,6 +1,6 @@
 {
   "name": "mobbin-axi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AXI-compliant Mobbin CLI for agents — token-efficient TOON output over Mobbin's MCP",
   "type": "module",
   "bin": { "mobbin-axi": "./dist/bin/mobbin-axi.js" },
